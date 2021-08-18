@@ -59,6 +59,7 @@ except:
 ADMIN_CMD = [
     'restart',
     'rebuild',
+    'search',
     'm3u8',
     'fixconfig',
     'assignid',
