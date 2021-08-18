@@ -34,10 +34,8 @@ telebot.logger.setLevel(logging.INFO)
 
 def grphelp(m):
     ghelpstr = f"""*Available Commands in Group :*
-        \n/rebuild - *To Rebuild the Metadata of your Libdrive.*
-        \n/search - *To Search Libdrive and Get Direct Download Links.*
-        \n/find - *To Search Libdrive and Get View Online Links.*
-        \n/m3u8 - *To Get M3U8 Playlists from Bot itself.*
+        \n/search - *To Search and Get Direct Download Links.*
+        \n/find - *To Search and Get View Online Links.*
         """
     bot.send_message(m.chat.id, ghelpstr, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
