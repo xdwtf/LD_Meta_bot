@@ -4,6 +4,7 @@ import os
 class Config(object):
     BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
     LD_DOMAIN = os.environ.get("LD_DOMAIN", "")
+    LDX_DOMAIN = os.environ.get("LDX_DOMAIN", "")
     SECRET = os.environ.get("SECRET", "")
     ADMIN_IDS = os.environ.get("ADMIN_IDS", "")
     PIC = os.environ.get("PIC", "")
