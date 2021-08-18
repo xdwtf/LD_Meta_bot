@@ -11,6 +11,7 @@ from config import Config
 
 BOT_TOKEN = Config.BOT_TOKEN
 LD_DOMAIN = Config.LD_DOMAIN
+LDX_DOMAIN = Config.LDX_DOMAIN
 SECRET = Config.SECRET
 ADMIN_IDS = Config.ADMIN_IDS
 PIC = Config.PIC
@@ -29,24 +30,24 @@ logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
 def searchmes(m):
-    chat = grpcmd(m, "search")
+    chat =  m.text[7:]
     if chat == "" :
         bot.send_message(m.chat.id, text = """Pls Send the Command with Valid Queries !!
         \n*To Search for Content :-*
         Send /search `<search_query>`
         """, parse_mode=telegram.ParseMode.MARKDOWN)
     else:
-        query = grpcmd(m, "search")
+        query =  m.text[8:]
         try:
             telegraph = Telegraph()
 
             telegraph_acc = telegraph.create_account(
-                short_name="Shrey Lib",
-                author_name="Shrey LibDrive Bot",
-                author_url="https://github.com/shrey2199/LD_Meta_bot"
+                short_name="WeebFlix",
+                author_name="WeebFlix",
+                author_url="https://telegram.dog/weebflix"
             )
 
-            search_results = bot.send_message(m.chat.id, "`Searching Your LibDrive ...`\n\n`Query` : *{}*".format(query), parse_mode=telegram.ParseMode.MARKDOWN)
+            search_results = bot.send_message(m.chat.id, "`Searching Your Request...`\n\n`Query` : *{}*".format(query), parse_mode=telegram.ParseMode.MARKDOWN)
 
             url_conf = "https://{}/api/v1/config?secret={}".format(LD_DOMAIN, SECRET)
 
@@ -105,7 +106,7 @@ def searchmes(m):
                                         episode_name = episode["name"]
                                         episode_id = episode["id"]
                                         episode_num+=1
-                                        dir_down_url = "https://{}/api/v1/redirectdownload/{}?a={}&id={}".format(LD_DOMAIN, episode_name.replace(" ","%20"), search_acc_auth, episode_id)
+                                        dir_down_url = "https://{}/api/v1/redirectdownload/{}?a={}&id={}".format(LDX_DOMAIN, episode_name.replace(" ","%20"), search_acc_auth, episode_id)
 
                                         episode_str = '''<p>
                                                         <b> - - - - - - - - - - - - Episode : </b><code>''' + str(episode_num) + '''</code><br>
@@ -122,8 +123,8 @@ def searchmes(m):
                                     telegraph_season = telegraph.create_page(
                                         title=season_name,
                                         html_content=season_html,
-                                        author_name='Shrey Libdrive Bot',
-                                        author_url='https://github.com/shrey2199/LD_Meta_bot'
+                                        author_name='WeebFlix',
+                                        author_url='https://telegram.dog/weebflix'
                                     )
                                     season_url = telegraph_season['path']
 
@@ -135,7 +136,7 @@ def searchmes(m):
 
                             else:
                                 name = media["name"]
-                                dir_down = "https://{}/api/v1/redirectdownload/{}?a={}&id={}".format(LD_DOMAIN, name.replace(" ","%20"), search_acc_auth, media["id"])
+                                dir_down = "https://{}/api/v1/redirectdownload/{}?a={}&id={}".format(LDX_DOMAIN, name.replace(" ","%20"), search_acc_auth, media["id"])
                                 f_season_html = "<b> - - - - - - - Direct Download Link : </b><a href={}>Download From Here</a> !!<br>".format(dir_down)
 
                             TG_html = '''<p>
@@ -155,19 +156,19 @@ def searchmes(m):
 
             if num_of_results != 0:
                 telegraph_res = telegraph.create_page(
-                    title="LibDrive Search Results",
+                    title="WeebFlix Search Results",
                     html_content=html_string,
-                    author_name='Shrey Libdrive Bot',
-                    author_url='https://github.com/shrey2199/LD_Meta_bot'
+                    author_name='WeebFlix',
+                    author_url='https://telegram.dog/weebflix'
                 )
 
                 telegraph_url = 'https://telegra.ph/{}'.format(telegraph_res['path'])
                 keyboard = telebot.types.InlineKeyboardMarkup()
                 keyboard.row(
-                    telebot.types.InlineKeyboardButton("🔍Search Results", url=telegraph_url)
+                    telebot.types.InlineKeyboardButton("🔍 Search Results", url=telegraph_url)
                 )
                 bot.edit_message_text("`Query` : *{}*\n\n`Found `*{}*` Matching Search Results !!`".format(query, str(num_of_results)), m.chat.id, message_id=search_results.message_id, reply_markup=keyboard, parse_mode=telegram.ParseMode.MARKDOWN)
             else:
                 bot.edit_message_text("*No Matching Search Results !!*", m.chat.id, message_id=search_results.message_id, parse_mode=telegram.ParseMode.MARKDOWN)
         except:
-            bot.edit_message_text("`LibDrive Server Not Accessible !!`", m.chat.id, message_id=search_results.message_id, parse_mode=telegram.ParseMode.MARKDOWN)
+            bot.edit_message_text("`Server Not Accessible !!`", m.chat.id, message_id=search_results.message_id, parse_mode=telegram.ParseMode.MARKDOWN)
