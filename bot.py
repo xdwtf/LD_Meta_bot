@@ -7,7 +7,9 @@ import requests
 import os
 import json
 import time
+import signal
 import heroku3
+import sys
 from telegraph import Telegraph
 from functools import wraps
 from random import *
@@ -28,6 +30,7 @@ from helpers.categories import  catsetup, cat_update_message, cat_update_keyboar
 from helpers.bot_id import configsetups
 from helpers.accounts import accountsetup
 from helpers.settings import settingsedit
+from helpers.signal import SIG
 
 # UPTIME
 
@@ -46,42 +49,19 @@ PIC = Config.PIC
 HEROKU_API_KEY = Config.HEROKU_API_KEY
 HEROKU_APP_NAME = Config.HEROKU_APP_NAME
 BOT_USERNAME = Config.BOT_USERNAME
+GROUP_CMDS = Config.GROUP_CMDS
 
 # ADMIN / OWNER
 
 try:
-    ADMIN_LIST = ADMIN_IDS 
-    restricted_mode = True
+    ADMIN_LIST = ADMIN_IDS
+    if len(ADMIN_LIST) != 0:
+        restricted_mode = True
+    else:
+        restricted_mode = False
 except:
     ADMIN_LIST = []  # ==> Do Not Touch This !!
     restricted_mode = False
-
-ADMIN_CMD = [
-    'restart',
-    'rebuild',
-    'search',
-    'm3u8',
-    'fixconfig',
-    'assignid',
-    'unassignid',
-    'accounts',
-    'accountsclip', 
-    'addaccount', 
-    'rmaccount',
-    'rmaccid', 
-    'categories', 
-    'setanilist', 
-    'addcategory', 
-    'rmcategory', 
-    'settings', 
-    'config', 
-    'set', 
-    'ui', 
-    'setui',
-    'hdyno',
-    'hrestart',
-    'speedtest'
-]
 
 # GROUPS
 
@@ -92,13 +72,19 @@ except:
     GRP_LIST = []  # ==> Do Not Touch This !!
     grprestricted_mode = True
 
+try:
+    GROUP_COMMANDS = GROUP_CMDS.split()
+    GROUP_COMMANDS.extend(['help'])
+except:
+    GROUP_COMMANDS = []
+
+# BOT CODE
+
 bot = telebot.TeleBot(BOT_TOKEN)
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
 CHAT_IDS = ADMIN_IDS.split()
-
-# BOT CODE
 
 for i in CHAT_IDS:
     if len(i) != 0 and i.isnumeric() == True:
@@ -118,8 +104,10 @@ def restricted(func):
                 print("Unauthorized access denied for {}.".format(chat_id))
                 bot.send_message(update.chat.id, "*Oops!!! Un-Authorized Chat*", parse_mode='Markdown', disable_web_page_preview=True)
                 return
-            elif any(cmd == update.text.split("@"+BOT_USERNAME)[0][1:] for cmd in ADMIN_CMD):
+
+            elif update.text.split("@"+BOT_USERNAME)[0][1:] not in GROUP_COMMANDS:
                 bot.send_message(update.chat.id, "*Oops!!! Un-Authorized User*", parse_mode='Markdown', disable_web_page_preview=True)
+
                 return
             elif "help" in update.text:
                 grphelp(m=update)
@@ -293,5 +281,8 @@ def iq_callback(query):
     global data
     data = query.data
     get_callback(query)
+
+signal.signal(signal.SIGINT, SIG.sigint_handler)
+signal.signal(signal.SIGTERM, SIG.sigterm_handler)
 
 bot.polling(none_stop=True, timeout=999999)
