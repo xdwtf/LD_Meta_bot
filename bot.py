@@ -104,10 +104,8 @@ def restricted(func):
                 print("Unauthorized access denied for {}.".format(chat_id))
                 bot.send_message(update.chat.id, "*Oops!!! Un-Authorized Chat*", parse_mode='Markdown', disable_web_page_preview=True)
                 return
-
             elif update.text.split("@"+BOT_USERNAME)[0][1:] not in GROUP_COMMANDS:
                 bot.send_message(update.chat.id, "*Oops!!! Un-Authorized User*", parse_mode='Markdown', disable_web_page_preview=True)
-
                 return
             elif "help" in update.text:
                 grphelp(m=update)
