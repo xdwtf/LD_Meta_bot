@@ -102,10 +102,12 @@ def restricted(func):
         if str(chat_id).startswith("-100"):
             if (grprestricted_mode) and (str(chat_id) not in GRP_LIST):
                 print("Unauthorized access denied for {}.".format(chat_id))
-                bot.send_message(update.chat.id, "*Error :\t\t*This Group is not Authorized to access the bot.\n\nPls Add Chat ID to Config Vars.\n\n[Contact Bot Developer](https://t.me/shrey_contact_bot) !!", parse_mode='Markdown', disable_web_page_preview=True)
+                bot.send_message(update.chat.id, "*Oops!!! Un-Authorized Chat*", parse_mode='Markdown', disable_web_page_preview=True)
                 return
+
             elif update.text.split("@"+BOT_USERNAME)[0][1:] not in GROUP_COMMANDS:
-                bot.send_message(update.chat.id, "*Error :\t\t*This Command can only be used by *Bot Admin* and in *Private Only* !!", parse_mode='Markdown', disable_web_page_preview=True)
+                bot.send_message(update.chat.id, "*Oops!!! Un-Authorized User*", parse_mode='Markdown', disable_web_page_preview=True)
+
                 return
             elif "help" in update.text:
                 grphelp(m=update)
@@ -113,7 +115,7 @@ def restricted(func):
         else:
             if (restricted_mode) and (str(chat_id) not in ADMIN_LIST):
                 print("Unauthorized access denied for {} - {}.".format(user_id, update.from_user.username))
-                bot.send_message(update.chat.id, "*Error :\t\t*You are not Authorized to access the bot.\n\nPls Add Chat ID to Config Vars.\n\n[Contact Bot Developer](https://t.me/shrey_contact_bot) !!", parse_mode='Markdown', disable_web_page_preview=True)
+                bot.send_message(update.chat.id, "*Oops!!! Un-Authorized User*", parse_mode='Markdown', disable_web_page_preview=True)
                 return
         return func(update, *args, **kwargs)
     return wrapped

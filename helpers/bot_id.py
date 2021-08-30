@@ -49,8 +49,8 @@ class configsetups:
                 }
             ui_config = {
                 "ui_config":{
-                    "title":"libDrive", 
-                    "icon":"https://avatars.githubusercontent.com/u/75073550?v=4", 
+                    "title":"WeebFlix", 
+                    "icon":"https://telegra.ph/file/305db1c1938436ad41521.png", 
                     "range":"16"
                     }
                 }
@@ -60,11 +60,11 @@ class configsetups:
                 if "title" in uiconf.keys() and "icon" in uiconf.keys() and "range" in uiconf.keys():
                     pass
                 if "title" not in uiconf.keys():
-                    uiconf.update({"title":"libDrive"})
+                    uiconf.update({"title":"WeebFlix"})
                 if "range" not in uiconf.keys():
                     uiconf.update({"range":16})
                 if "icon" not in uiconf.keys():
-                    uiconf.update({"icon":"https://avatars.githubusercontent.com/u/75073550?v=4"})
+                    uiconf.update({"icon":"https://telegra.ph/file/305db1c1938436ad41521.png"})
                 else:
                     pass
             if "ui_config" not in conf.keys():
