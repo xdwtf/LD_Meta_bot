@@ -13,8 +13,8 @@ HEROKU_APP_NAME = Config.HEROKU_APP_NAME
 BOT_USERNAME = Config.BOT_USERNAME
 
 def grpcmd(mes, cmd):
-    if BOT_USERNAME in mes.text :
-        query = mes.text.split(BOT_USERNAME)[1].strip()
-    else:
-        query = mes.text[(len(cmd)+2):]
-    return query
+    return (
+        mes.text.split(BOT_USERNAME)[1].strip()
+        if BOT_USERNAME in mes.text
+        else mes.text[(len(cmd) + 2) :]
+    )

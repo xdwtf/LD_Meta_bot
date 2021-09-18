@@ -51,11 +51,9 @@ class catsetup:
                 global CatC
                 CatC = res2["content"]["category_list"]
                 keyboard = telebot.types.InlineKeyboardMarkup()
-                CatNum = 0
                 CatSer = "cat"
-                for category in CatC:
+                for CatNum, category in enumerate(CatC, start=1):
                     CatName = category["name"]
-                    CatNum+=1
                     CatSerial = CatSer + str(CatNum)
                     category.update({"cats":CatSerial, "delete":"delete"+CatSerial})
                     keyboard.row(
@@ -91,21 +89,20 @@ class catsetup:
                 res1 = r1.json()
                 conf = res1["content"]
                 confcat = res1["content"]["category_list"]
-                
+
 
                 for cat in confcat:
-                    if cat["bot_id"] == id:
-                        name = cat["name"]
-                        if "anilist" in cat:
-                            prev = cat["anilist"]
-                            cat["anilist"] = value
-                            changeanilist = "Anilist Value changed for Category `" + str(name) + "`\n\nFrom `" + str(prev) + "` *→* `" + str(value) + "`"
-                        else:
-                            cat.update({"anilist":value})
-                            changeanilist = "Anilist Value set for Category `" + str(name) + "` to `" + str(value) + "`"
-                    else:
+                    if cat["bot_id"] != id:
                         continue
-                
+
+                    name = cat["name"]
+                    if "anilist" in cat:
+                        prev = cat["anilist"]
+                        cat["anilist"] = value
+                        changeanilist = "Anilist Value changed for Category `" + str(name) + "`\n\nFrom `" + str(prev) + "` *→* `" + str(value) + "`"
+                    else:
+                        cat.update({"anilist":value})
+                        changeanilist = "Anilist Value set for Category `" + str(name) + "` to `" + str(value) + "`"
                 headers = {
                     'accept': 'application/json, text/plain, */*',
                     'content-type': 'application/json;charset=UTF-8',
@@ -117,7 +114,7 @@ class catsetup:
                 )
 
                 data = json.dumps(conf)
-                
+
                 r = requests.post('https://' + LD_DOMAIN + '/api/v1/config', headers=headers, params=params, data=data)
                 res = r.json()
                 if res["code"] == 200 and res["success"] == True:
@@ -182,16 +179,15 @@ class catsetup:
                 res1 = r1.json()
                 conf = res1["content"]
                 confcat = res1["content"]["category_list"]
-                
+
 
                 for cat in confcat:
-                    if cat["bot_id"] == id:
-                        confcat.remove(cat)
-                        name = cat["name"]
-                        type = cat["type"]
-                    else:
+                    if cat["bot_id"] != id:
                         continue
-                
+
+                    confcat.remove(cat)
+                    name = cat["name"]
+                    type = cat["type"]
                 headers = {
                     'accept': 'application/json, text/plain, */*',
                     'content-type': 'application/json;charset=UTF-8',
@@ -203,7 +199,7 @@ class catsetup:
                 )
 
                 data = json.dumps(conf)
-                
+
                 r = requests.post('https://' + LD_DOMAIN + '/api/v1/config', headers=headers, params=params, data=data)
                 res = r.json()
                 if res["code"] == 200 and res["success"] == True:
@@ -226,29 +222,26 @@ def get_callback(query):
     action_keyboard(query.message)
 
 def cat_update_message(m, data):
-    if data == 'movies' or data == 'tv_shows' or data == 'amovies' or data == 'atv_shows':
+    if data in ['movies', 'tv_shows', 'amovies', 'atv_shows']:
         global type_media
         global catadd2
+        messg = cataddS
         if data == 'movies':
-            messg = cataddS          
             catadd2 = bot.edit_message_text(messg,
                 m.chat.id, message_id=catadd.message_id,
                 parse_mode=telegram.ParseMode.MARKDOWN)
             type_media = "movies"
         elif data == 'tv_shows':
-            messg = cataddS               
             catadd2 = bot.edit_message_text(messg,
                 m.chat.id, message_id=catadd.message_id,
                 parse_mode=telegram.ParseMode.MARKDOWN)
             type_media = "tv_shows"
         elif data == 'amovies':
-            messg = cataddS          
             catadd2 = bot.edit_message_text(messg,
                 m.chat.id, message_id=catadd.message_id,
                 parse_mode=telegram.ParseMode.MARKDOWN)
             type_media = "amovies"
-        elif data == 'atv_shows':
-            messg = cataddS          
+        else:
             catadd2 = bot.edit_message_text(messg,
                 m.chat.id, message_id=catadd.message_id,
                 parse_mode=telegram.ParseMode.MARKDOWN)
@@ -274,10 +267,6 @@ def cat_update_message(m, data):
                     reply_markup=cat_update_keyboard(pg, data),
                     parse_mode=telegram.ParseMode.MARKDOWN
                 )
-            else:
-                pass
-    else:
-        pass
 
 def cat_update_keyboard(pg, data):
     if data == "closecat":
@@ -291,7 +280,7 @@ def cat_update_keyboard(pg, data):
             telebot.types.InlineKeyboardButton('❌ CLOSE ❌', callback_data='closecat')
         )
         return keyboard
-    elif str(data).startswith("cat"):    
+    elif str(data).startswith("cat"):
         for category in CatC:
             if data == category["cats"]:
                 keyboard = telebot.types.InlineKeyboardMarkup()
@@ -311,47 +300,33 @@ def cat_update_keyboard(pg, data):
                     telebot.types.InlineKeyboardButton('❌ CLOSE ❌', callback_data='closecat')
                 )
                 return keyboard
-            else:
-                pass
-    else:
-        pass
 
 def action_addcategory(m, type_media):
-    try:    
+    try:
         url = 'https://' + LD_DOMAIN + '/api/v1/config?secret=' + SECRET
         r1 = requests.get(url)
         res1 = r1.json()
         conf = res1["content"]
         confcat = res1["content"]["category_list"]
 
-        if type_media=='movies' or type_media=='tv_shows':
+        if type_media in ['movies', 'tv_shows']:
             anilist = False
-            if type_media=='movies':
-                type_cat = 'Movies'
-            if type_media=='tv_shows':
-                type_cat = 'TV Shows'
-            else:
-                pass
-        if type_media=='amovies' or type_media=='atv_shows':
+        if type_media == 'movies':
+            type_cat = 'Movies'
+        elif type_media == 'tv_shows':
+            type_cat = 'TV Shows'
+        if type_media in ['amovies', 'atv_shows']:
             anilist = True
-            if type_media=='amovies':
-                type_cat = 'Movies'
-            if type_media=='atv_shows':
-                type_cat = 'TV Shows'
-            else:
-                pass
-        else:
-            pass
-
+        if type_media == 'amovies':
+            type_cat = 'Movies'
+        elif type_media == 'atv_shows':
+            type_cat = 'TV Shows'
         category_dict = {"id": folder_id, "name": name, "bot_id":bot_id, "type": str(type_cat)}
         CatS="*Name :* `" + name + "`\n*Folder ID :* `" + folder_id + "`\n*Type :* `" + type_cat + "`\n"
 
         if anilist==True:
             category_dict.update({"anilist":True})
             CatS = CatS + "*Anilist :* `" + "True" + "`\n"
-        else:
-            pass
-        
         confcat.append(category_dict)
 
         headers = {
@@ -365,7 +340,7 @@ def action_addcategory(m, type_media):
         )
 
         data = json.dumps(conf)
-        
+
         r = requests.post('https://' + LD_DOMAIN + '/api/v1/config', headers=headers, params=params, data=data)
         res = r.json()
         if res["code"] == 200 and res["success"] == True:
@@ -381,18 +356,15 @@ def action_keyboard(m, data):
     elif str(data).startswith("delete"):
         global category
         for category in CatC:
-            if data == category["delete"]:
-                global bot_id
-                bot_id = category["bot_id"]
-                global delname
-                delname = category["name"]
-                for delcat in CatL:
-                    if delcat["bot_id"]==bot_id:
-                        CatL.remove(delcat)
-                    else:
-                        pass
-            else:
+            if data != category["delete"]:
                 continue
+            global bot_id
+            bot_id = category["bot_id"]
+            global delname
+            delname = category["name"]
+            for delcat in CatL:
+                if delcat["bot_id"]==bot_id:
+                    CatL.remove(delcat)
         action_category("delete", m)
 
 def action_category(action, m):
@@ -433,7 +405,7 @@ def action_category(action, m):
 
 def action_listcategory(m):
     url = 'https://' + LD_DOMAIN + '/api/v1/config?secret=' + SECRET
-    
+
     try:
         r1 = requests.get(url)
         r2 = requests.get(url)
@@ -447,11 +419,9 @@ def action_listcategory(m):
             global CatC
             CatC = res2["content"]["category_list"]
             keyboard = telebot.types.InlineKeyboardMarkup()
-            CatNum = 0
             CatSer = "cat"
-            for category in CatC:
+            for CatNum, category in enumerate(CatC, start=1):
                 CatName = category["name"]
-                CatNum+=1
                 CatSerial = CatSer + str(CatNum)
                 category.update({"cats":CatSerial, "delete":"delete"+CatSerial})
                 keyboard.row(

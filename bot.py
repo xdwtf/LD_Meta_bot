@@ -55,10 +55,7 @@ GROUP_CMDS = Config.GROUP_CMDS
 
 try:
     ADMIN_LIST = ADMIN_IDS
-    if len(ADMIN_LIST) != 0:
-        restricted_mode = True
-    else:
-        restricted_mode = False
+    restricted_mode = len(ADMIN_LIST) != 0
 except:
     ADMIN_LIST = []  # ==> Do Not Touch This !!
     restricted_mode = False
@@ -89,9 +86,6 @@ CHAT_IDS = ADMIN_IDS.split()
 for i in CHAT_IDS:
     if len(i) != 0 and i.isnumeric() == True:
         bot.send_message(int(i), "`Hey ! The Bot Is Up and Running !`", parse_mode=telegram.ParseMode.MARKDOWN)
-    else:
-        pass
-
 allchar = "abcdefghijklmnopqrstuvwxyz0123456789"
 
 def restricted(func):
@@ -102,19 +96,18 @@ def restricted(func):
         if str(chat_id).startswith("-100"):
             if (grprestricted_mode) and (str(chat_id) not in GRP_LIST):
                 print("Unauthorized access denied for {}.".format(chat_id))
-                bot.send_message(update.chat.id, "*Error :\t\t*This Group is not Authorized to access the bot.\n\nPls Add Chat ID to Config Vars.\n\n[Contact Bot Developer](https://t.me/shrey_contact_bot) !!", parse_mode='Markdown', disable_web_page_preview=True)
+                bot.send_message(update.chat.id, "*Oops!!! Un-Authorized Chat*", parse_mode='Markdown', disable_web_page_preview=True)
                 return
             elif update.text.split("@"+BOT_USERNAME)[0][1:] not in GROUP_COMMANDS:
-                bot.send_message(update.chat.id, "*Error :\t\t*This Command can only be used by *Bot Admin* and in *Private Only* !!", parse_mode='Markdown', disable_web_page_preview=True)
+                bot.send_message(update.chat.id, "*Oops!!! Un-Authorized User*", parse_mode='Markdown', disable_web_page_preview=True)
                 return
             elif "help" in update.text:
                 grphelp(m=update)
                 return
-        else:
-            if (restricted_mode) and (str(chat_id) not in ADMIN_LIST):
-                print("Unauthorized access denied for {} - {}.".format(user_id, update.from_user.username))
-                bot.send_message(update.chat.id, "*Error :\t\t*You are not Authorized to access the bot.\n\nPls Add Chat ID to Config Vars.\n\n[Contact Bot Developer](https://t.me/shrey_contact_bot) !!", parse_mode='Markdown', disable_web_page_preview=True)
-                return
+        elif (restricted_mode) and (str(chat_id) not in ADMIN_LIST):
+            print("Unauthorized access denied for {} - {}.".format(user_id, update.from_user.username))
+            bot.send_message(update.chat.id, "*Oops!!! Un-Authorized User*", parse_mode='Markdown', disable_web_page_preview=True)
+            return
         return func(update, *args, **kwargs)
     return wrapped
 
@@ -263,11 +256,11 @@ def iq_callback(query):
 
 def get_callback(query):
     bot.answer_callback_query(query.id)
-    if data == 'instructions' or data == 'help' or data == 'closehelp':
+    if data in ['instructions', 'help', 'closehelp']:
         help_update_message(query.message, data)
-    elif data == '1' or data == '2' or data == '3' or data == 'close':
+    elif data in ['1', '2', '3', 'close']:
         config_update_message(query.message, data)
-    elif data == 'movies' or data == 'tv_shows' or data == 'amovies' or data == 'atv_shows':
+    elif data in ['movies', 'tv_shows', 'amovies', 'atv_shows']:
         cat_update_message(query.message, data)
         action_addcategory(query.message, data)
     else:

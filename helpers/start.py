@@ -46,7 +46,7 @@ def get_readable_time(seconds: int) -> str:
 
 def startmessage(m, botStartTime):
     uptime = get_readable_time((time.time() - botStartTime))
-    start_string = "Hi ! Welcome to Libdrive Manager Bot by [Shreyansh Rawal](telegram.me/s_rawal) !\n\n*I'm Alive Since : *`" + uptime + "`\n\n ✯ *For More Info*, Send /help to the Bot !!\n\n ✯ *Also Read the Important Instructions* by clicking the Instructions Button in /help !!"
+    start_string = "Hoi!!\n\n*I'm Alive Since : *`" + uptime + "`\n\n*For More Info /help*"
     if len(PIC.replace(" ", "")) != 0:
         bot.send_photo(m.chat.id, PIC, caption = start_string, parse_mode=telegram.ParseMode.MARKDOWN)
     else:

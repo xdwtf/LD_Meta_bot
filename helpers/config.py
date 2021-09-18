@@ -88,38 +88,29 @@ def get_callback(query):
     config_update_message(query.message)
 
 def config_update_message(m, data):
-    if data == '1' or data == '2' or data == '3' or data == 'close':
-        if data == '1' or data == '2' or data == '3':  
+    if data in ['1', '2', '3', 'close']:
+        if data in ['1', '2', '3']:  
             if data == '1':
                 pg = ConSgoogle
             elif data == '2':
                 pg = ConSothers
-            elif data == '3':
+            else:
                 pg = ConSsite
             bot.edit_message_text(pg,
                 m.chat.id, message_id=configs.message_id,
                 reply_markup=config_update_keyboard(pg, data),
                 parse_mode=telegram.ParseMode.MARKDOWN)
-        elif data == 'close':
-            bot.delete_message(m.chat.id, message_id=configs.message_id)
         else:
-            pass
-    elif data == '1wui' or data == '2wui' or data == 'closewui':
-        if data == '1wui' or data == '2wui':  
-            if data == '1wui':
-                pg = ConSgooglewui
-            elif data == '2wui':
-                pg = ConSotherswui
+            bot.delete_message(m.chat.id, message_id=configs.message_id)
+    elif data in ['1wui', '2wui', 'closewui']:
+        if data in ['1wui', '2wui']:  
+            pg = ConSgooglewui if data == '1wui' else ConSotherswui
             bot.edit_message_text(pg,
                 m.chat.id, message_id=configswui.message_id,
                 reply_markup=config_update_keyboard(pg),
                 parse_mode=telegram.ParseMode.MARKDOWN)
-        elif data == 'closewui':
-            bot.delete_message(m.chat.id, message_id=configswui.message_id)
         else:
-            pass
-    else:
-        pass
+            bot.delete_message(m.chat.id, message_id=configswui.message_id)
 
 def config_update_keyboard(pg, data):
     if data == '1':
@@ -160,8 +151,6 @@ def config_update_keyboard(pg, data):
             telebot.types.InlineKeyboardButton('❌', callback_data='closewui')
         )
         return keyboard
-    else:
-        pass
 
 @bot.callback_query_handler(func=lambda call: True)
 def iq_callback(query):

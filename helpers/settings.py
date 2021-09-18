@@ -34,7 +34,7 @@ allchar = "abcdefghijklmnopqrstuvwxyz0123456789"
 class settingsedit:
     def settings_mod(m):
         url = 'https://' + LD_DOMAIN + '/api/v1/config?secret=' + SECRET
-        
+
         try:
             r = requests.get(url)
             res = r.json()
@@ -42,10 +42,16 @@ class settingsedit:
                 config = res["content"]
                 SetS = ""
                 for i in config.keys():
-                    if i == "category_list" or i == "account_list" or i == "service_accounts" or i == "token_expiry" or i == "ui_config":
+                    if i in [
+                        "category_list",
+                        "account_list",
+                        "service_accounts",
+                        "token_expiry",
+                        "ui_config",
+                    ]:
                         continue
                     SetAddS = "• `" + i + "` : `" + str(config[i]) + "`\n\n"
-                    SetS = SetS + SetAddS
+                    SetS += SetAddS
                 bot.send_message(m.chat.id, text="*Libdrive Server Settings :-*\n\n" + str(SetS) , parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
             else:
                 bot.send_message(m.chat.id, text="`Unknown Error Occured !!\nPlease Verify Your Credentials !!`", parse_mode=telegram.ParseMode.MARKDOWN)
@@ -57,7 +63,7 @@ class settingsedit:
         i = ""
         if len(m.text.split()) == 1:
             i = ""
-        elif len(m.text.split()) == 2 or len(m.text.split()) == 3:
+        elif len(m.text.split()) in [2, 3]:
             i += m.text.split()[1]
         if chat == "":
             bot.send_message(m.chat.id, text = """Pls Send the Command with Valid Queries !!
@@ -66,7 +72,13 @@ class settingsedit:
             \nGet `keys` by sending /settings
             \n⚠ Do Not Use This Command For Accounts, Categories and UI Config
             \nSeperate Commands are available for that !!""", parse_mode=telegram.ParseMode.MARKDOWN)
-        elif i == "category_list" or i == "account_list" or i == "service_accounts" or i == "token_expiry" or i == "ui_config":
+        elif i in {
+            "category_list",
+            "account_list",
+            "service_accounts",
+            "token_expiry",
+            "ui_config",
+        }:
             bot.send_message(m.chat.id, text = """The /set Command does not work for this key.
             \n⚠️ Do Not Use The /set Command For :-
             Accounts, Categories and UI Config
@@ -102,7 +114,7 @@ class settingsedit:
                 )
 
                 data = json.dumps(conf)
-                
+
                 r = requests.post('https://' + LD_DOMAIN + '/api/v1/config', headers=headers, params=params, data=data)
                 res = r.json()
                 if res["code"] == 200 and res["success"] == True:
@@ -115,7 +127,7 @@ class settingsedit:
     
     def ui_mod(m):
         url = 'https://' + LD_DOMAIN + '/api/v1/config?secret=' + SECRET
-        
+
         try:
             r = requests.get(url)
             res = r.json()
@@ -124,7 +136,7 @@ class settingsedit:
                 SetS = ""
                 for i in config.keys():
                     SetAddS = "• `" + i + "` : `" + str(config[i]) + "`\n\n"
-                    SetS = SetS + SetAddS
+                    SetS += SetAddS
                 bot.send_message(m.chat.id, text="*Libdrive UI Settings :-*\n\n" + str(SetS) , parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
             else:
                 bot.send_message(m.chat.id, text="`Unknown Error Occured !!\nPlease Verify Your Credentials !!`", parse_mode=telegram.ParseMode.MARKDOWN)
@@ -142,10 +154,7 @@ class settingsedit:
         else:
             key = m.text.split()[1]
             value_script = m.text.split()[2]
-            if value_script.isnumeric() == True:
-                value = int(value_script)
-            else:
-                value = value_script
+            value = int(value_script) if value_script.isnumeric() == True else value_script
             url = 'https://' + LD_DOMAIN + '/api/v1/config?secret=' + SECRET
             try:
                 r1 = requests.get(url)
@@ -166,7 +175,7 @@ class settingsedit:
                 )
 
                 data = json.dumps(conf)
-                
+
                 r = requests.post('https://' + LD_DOMAIN + '/api/v1/config', headers=headers, params=params, data=data)
                 res = r.json()
                 if res["code"] == 200 and res["success"] == True:
