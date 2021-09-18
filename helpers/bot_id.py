@@ -42,19 +42,6 @@ class configsetups:
             res1 = r1.json()
             conf = res1["content"]
 
-            # configs
-
-            kill_switch = {
-                "kill_switch":False
-                }
-            ui_config = {
-                "ui_config":{
-                    "title":"WeebFlix", 
-                    "icon":"https://telegra.ph/file/305db1c1938436ad41521.png", 
-                    "range":"16"
-                    }
-                }
-
             if "ui_config" in conf.keys():
                 uiconf = conf["ui_config"]
                 if "title" in uiconf.keys() and "icon" in uiconf.keys() and "range" in uiconf.keys():
@@ -65,15 +52,23 @@ class configsetups:
                     uiconf.update({"range":16})
                 if "icon" not in uiconf.keys():
                     uiconf.update({"icon":"https://telegra.ph/file/305db1c1938436ad41521.png"})
-                else:
-                    pass
             if "ui_config" not in conf.keys():
+                ui_config = {
+                    "ui_config":{
+                        "title":"WeebFlix", 
+                        "icon":"https://telegra.ph/file/305db1c1938436ad41521.png", 
+                        "range":"16"
+                        }
+                    }
+
                 conf.update(ui_config)
             if "kill_switch" not in conf.keys():
-                conf.update(kill_switch)
-            else:
-                pass
+                # configs
 
+                kill_switch = {
+                    "kill_switch":False
+                    }
+                conf.update(kill_switch)
             headers = {
                 'authority': LD_DOMAIN,
                 'sec-ch-ua': '" Not;A Brand";v="99", "Microsoft Edge";v="91", "Chromium";v="91"',
@@ -94,7 +89,7 @@ class configsetups:
             )
 
             data = json.dumps(conf)
-                
+
             r = requests.post('https://' + LD_DOMAIN + '/api/v1/config', headers=headers, params=params, data=data)
             res = r.json()
             if res["code"] == 200 and res["success"] == True:
@@ -118,17 +113,13 @@ class configsetups:
             confacc = res1["content"]["account_list"]
             for acc in confacc:
                 bot_id = "".join(choice(allchar) for x in range(randint(min_char, max_char)))
-                if "bot_id" in acc.keys():
-                    pass
-                else:
+                if "bot_id" not in acc.keys():
                     acc.update({"bot_id": bot_id})
-            
+
             confcat = res1["content"]["category_list"]
             for cat in confcat:
                 bot_id = "".join(choice(allchar) for x in range(randint(min_char, max_char)))
-                if "bot_id" in cat.keys():
-                    pass
-                else:
+                if "bot_id" not in cat.keys():
                     cat.update({"bot_id": bot_id})
 
             headers = {
@@ -151,7 +142,7 @@ class configsetups:
             )
 
             data = json.dumps(conf)
-                
+
             r = requests.post('https://' + LD_DOMAIN + '/api/v1/config', headers=headers, params=params, data=data)
             res = r.json()
             if res["code"] == 200 and res["success"] == True:
@@ -174,16 +165,10 @@ class configsetups:
             for acc in confacc:
                 if "bot_id" in acc.keys():
                     del acc["bot_id"]
-                else:
-                    pass
-            
             confcat = res1["content"]["category_list"]
             for cat in confcat:
                 if "bot_id" in cat.keys():
                     del cat["bot_id"]
-                else:
-                    pass
-
             headers = {
                 'authority': LD_DOMAIN,
                 'sec-ch-ua': '" Not;A Brand";v="99", "Microsoft Edge";v="91", "Chromium";v="91"',
@@ -204,7 +189,7 @@ class configsetups:
             )
 
             data = json.dumps(conf)
-                
+
             r = requests.post('https://' + LD_DOMAIN + '/api/v1/config', headers=headers, params=params, data=data)
             res = r.json()
             if res["code"] == 200 and res["success"] == True:

@@ -34,7 +34,7 @@ allchar = "abcdefghijklmnopqrstuvwxyz0123456789"
 class accountsetup:
     def accountsmes(m):
         url = 'https://' + LD_DOMAIN + '/api/v1/config?secret=' + SECRET
-        
+
         try:
 
             tempacc = bot.send_message(m.chat.id, text="`Getting Your Accounts ...`", parse_mode=telegram.ParseMode.MARKDOWN)
@@ -43,13 +43,10 @@ class accountsetup:
             if res["code"] == 200 and res["success"] == True:
                 AccL = res["content"]["account_list"]
                 AccS = ""
-                AccN = 0
-                for account in AccL:
+                for AccN, account in enumerate(AccL, start=1):
                     if "bot_id" in account.keys():
-                        AccN+=1
                         AccS=AccS + str(AccN) + ". *" + str(account["username"]) + " :* `" + str(account["auth"]) + "`\n    To Delete : /rmaccid `" + str(account["bot_id"]) + "`\n\n"
                     else:
-                        AccN+=1
                         AccS=AccS + str(AccN) + ". *" + str(account["username"]) + " :* `" + str(account["auth"]) + "`\n\n"
                 bot.delete_message(m.chat.id, message_id=tempacc.message_id)
                 bot.send_message(m.chat.id, text="*Registered Accounts :-*\n\n" + str(AccS) , parse_mode=telegram.ParseMode.MARKDOWN)
@@ -71,13 +68,10 @@ class accountsetup:
                 AccL = res["content"]["account_list"]
                 TAcc = 0
                 AccS = ""
-                AccN = 0
-                for account in AccL:
+                for AccN, account in enumerate(AccL, start=1):
                     if "bot_id" in account.keys():
-                        AccN+=1
                         AccS=AccS + str(AccN) + ". " + str(account["username"]) + " : " + str(account["auth"]) + "\n    To Delete : /rmaccid " + str(account["bot_id"]) + "\n\n"
                     else:
-                        AccN+=1
                         AccS=AccS + str(AccN) + ". " + str(account["username"]) + " : " + str(account["auth"]) + "\n\n"
                     TAcc+=1
 
@@ -120,10 +114,7 @@ class accountsetup:
             bot_id = "".join(choice(allchar) for x in range(randint(8, 8)))
             username = m.text.split()[1]
             password = m.text.split()[2]
-            if len(m.text.split()) == 4:
-                pic = m.text.split()[3]
-            else:
-                pic = ""
+            pic = m.text.split()[3] if len(m.text.split()) == 4 else ""
             auth = "".join(choice(allchar) for x in range(randint(50, 50)))
             url = 'https://' + LD_DOMAIN + '/api/v1/config?secret=' + SECRET
             try:
@@ -151,7 +142,7 @@ class accountsetup:
                 )
 
                 data = json.dumps(conf)
-                
+
                 r = requests.post('https://' + LD_DOMAIN + '/api/v1/config', headers=headers, params=params, data=data)
                 res = r.json()
                 if res["code"] == 200 and res["success"] == True:
@@ -222,15 +213,14 @@ class accountsetup:
                 res1 = r1.json()
                 conf = res1["content"]
                 confacc = res1["content"]["account_list"]
-        
+
                 for acc in confacc:
-                    if acc["bot_id"] == id:
-                        confacc.remove(acc)
-                        username = acc["username"]
-                        password = acc["password"]
-                    else:
+                    if acc["bot_id"] != id:
                         continue
-                
+
+                    confacc.remove(acc)
+                    username = acc["username"]
+                    password = acc["password"]
                 headers = {
                     'accept': 'application/json, text/plain, */*',
                     'content-type': 'application/json;charset=UTF-8',
@@ -242,7 +232,7 @@ class accountsetup:
                 )
 
                 data = json.dumps(conf)
-                
+
                 r = requests.post('https://' + LD_DOMAIN + '/api/v1/config', headers=headers, params=params, data=data)
                 res = r.json()
                 if res["code"] == 200 and res["success"] == True:

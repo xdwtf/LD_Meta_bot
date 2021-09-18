@@ -31,7 +31,7 @@ telebot.logger.setLevel(logging.INFO)
 
 def searchmes(m):
     chat = grpcmd(m, "search")
-    if chat == "" :
+    if chat == "":
         bot.send_message(m.chat.id, text = """Pls Send the Command with Valid Queries !!
         \n*To Search for Content :-*
         Send /search `<search_query>`
@@ -65,81 +65,70 @@ def searchmes(m):
 
             if res2["code"] == 200 and res2["success"] == True:
                 for cat in res2["content"]:
-                    if len(cat["children"]) != 0:
-                        for media in cat["children"]:
-                            num_of_results += 1
-                            title = media["title"]
-                            type_ = cat["categoryInfo"]["type"]
-                            if "releaseDate" in media.keys():
-                                releaseDate = media["releaseDate"]
-                            else:
-                                releaseDate = ""
-                            if "backdropPath" in media.keys():
-                                backdrop = media["backdropPath"]
-                            else:
-                                backdrop = ""
-                            if "overview" in media.keys():
-                                overview = media["overview"]
-                            else:
-                                overview = ""
+                    if len(cat["children"]) == 0:
+                        continue
+                    for media in cat["children"]:
+                        num_of_results += 1
+                        title = media["title"]
+                        type_ = cat["categoryInfo"]["type"]
+                        releaseDate = media["releaseDate"] if "releaseDate" in media.keys() else ""
+                        backdrop = media["backdropPath"] if "backdropPath" in media.keys() else ""
+                        overview = media["overview"] if "overview" in media.keys() else ""
+                        if str(type_) == "TV Shows":
+                            show_id = media["id"]
+                            url_show = "https://{}/api/v1/metadata?a={}&id={}".format(LD_DOMAIN, search_acc_auth, show_id)
+                            r3 = requests.get(url_show)
+                            res3 = r3.json()
 
-                            if str(type_) == "TV Shows":
-                                show_id = media["id"]
-                                url_show = "https://{}/api/v1/metadata?a={}&id={}".format(LD_DOMAIN, search_acc_auth, show_id)
-                                r3 = requests.get(url_show)
-                                res3 = r3.json()
+                            f_season_html = ""
 
-                                f_season_html = ""
+                            for season in res3["content"]["children"]:
+                                season_name = season["name"]
+                                season_id = season["id"]
 
-                                for season in res3["content"]["children"]:
-                                    season_name = season["name"]
-                                    season_id = season["id"]
+                                url_season = "https://{}/api/v1/metadata?a={}&id={}".format(LD_DOMAIN, search_acc_auth, season_id)
+                                r4 = requests.get(url_season)
+                                res4 = r4.json()
 
-                                    url_season = "https://{}/api/v1/metadata?a={}&id={}".format(LD_DOMAIN, search_acc_auth, season_id)
-                                    r4 = requests.get(url_season)
-                                    res4 = r4.json()
+                                episode_html = ""
 
-                                    episode_num = 0
-                                    episode_html = ""
+                                for episode_num, episode in enumerate(res4["content"]["children"], start=1):
+                                    episode_name = episode["name"]
+                                    episode_id = episode["id"]
+                                    dir_down_url = "https://{}/api/v1/redirectdownload/{}?a={}&id={}".format(LDX_DOMAIN, episode_name.replace(" ","%20"), search_acc_auth, episode_id)
 
-                                    for episode in res4["content"]["children"]:
-                                        episode_name = episode["name"]
-                                        episode_id = episode["id"]
-                                        episode_num+=1
-                                        dir_down_url = "https://{}/api/v1/redirectdownload/{}?a={}&id={}".format(LDX_DOMAIN, episode_name.replace(" ","%20"), search_acc_auth, episode_id)
-
-                                        episode_str = '''<p>
+                                    episode_str = '''<p>
                                                         <b> - - - - - - - - - - - - Episode : </b><code>''' + str(episode_num) + '''</code><br>
                                                         <b> - - - - - - - - - - - - Direct Download Link : </b><a href={}>Download From Here</a> !!<br>
                                                         </p>'''.format(dir_down_url)
 
-                                        episode_html = episode_html + '{}'.format(episode_str)
-                                    
-                                    season_html = '''
+                                    episode_html += '{}'.format(episode_str)
+
+                                season_html = '''
                                                     <b> - - - - - Season : </b><code>''' + season_name + '''</code><br><br>
                                                     {}
                                                     '''.format(episode_html)
-                                    
-                                    telegraph_season = telegraph.create_page(
-                                        title=season_name,
-                                        html_content=season_html,
-                                        author_name='WeebFlix',
-                                        author_url='https://telegram.dog/weebflix'
-                                    )
-                                    season_url = telegraph_season['path']
 
-                                    season_html_url = '''
+                                telegraph_season = telegraph.create_page(
+                                    title=season_name,
+                                    html_content=season_html,
+                                    author_name='WeebFlix',
+                                    author_url='https://telegram.dog/weebflix'
+                                )
+                                season_url = telegraph_season['path']
+
+                                season_html_url = '''
                                                     <b> - - - - - Season : </b><a href="https://telegra.ph/''' + season_url + '''">''' + season_name + '''</a><br><br>
                                                     '''
 
-                                    f_season_html = f_season_html + season_html_url
+                                f_season_html += season_html_url
 
-                            else:
-                                name = media["name"]
-                                dir_down = "https://{}/api/v1/redirectdownload/{}?a={}&id={}".format(LDX_DOMAIN, name.replace(" ","%20"), search_acc_auth, media["id"])
-                                f_season_html = "<b> - - - - - - - Direct Download Link : </b><a href={}>Download From Here</a> !!<br>".format(dir_down)
+                        else:
+                            name = media["name"]
+                            dir_down = "https://{}/api/v1/redirectdownload/{}?a={}&id={}".format(LDX_DOMAIN, name.replace(" ","%20"), search_acc_auth, media["id"])
+                            f_season_html = "<b> - - - - - - - Direct Download Link : </b><a href={}>Download From Here</a> !!<br>".format(dir_down)
 
-                            TG_html = '''<p>
+                        TG_html = '''<p>
                                             <img src=''' + str(backdrop) + '''>
                                             <b>Name : </b><code>''' + str(title) + '''</code><br>
                                             <b> - Overview : </b><code>''' + str(overview) + '''</code><br>
@@ -148,12 +137,7 @@ def searchmes(m):
                                             {}<br>➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖<br>
                                         </p>'''.format(f_season_html)
 
-                            html_string = html_string + TG_html
-                    else:
-                        continue
-            else:
-                pass
-
+                        html_string += TG_html
             if num_of_results != 0:
                 telegraph_res = telegraph.create_page(
                     title="WeebFlix Search Results",

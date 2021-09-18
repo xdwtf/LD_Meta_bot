@@ -31,7 +31,7 @@ telebot.logger.setLevel(logging.INFO)
 
 def findmes(m):
     chat = grpcmd(m, "find")
-    if chat == "" :
+    if chat == "":
         bot.send_message(m.chat.id, text = """Pls Send the Command with Valid Queries !!
         \n*To Search for Content :-*
         Send /find `<search_query>`
@@ -65,33 +65,24 @@ def findmes(m):
 
             if res2["code"] == 200 and res2["success"] == True:
                 for cat in res2["content"]:
-                    if len(cat["children"]) != 0:
-                        for media in cat["children"]:
-                            num_of_results += 1
-                            title = media["title"]
-                            type_ = cat["categoryInfo"]["type"]
-                            if "releaseDate" in media.keys():
-                                releaseDate = media["releaseDate"]
-                            else:
-                                releaseDate = ""
-                            if "backdropPath" in media.keys():
-                                backdrop = media["backdropPath"]
-                            else:
-                                backdrop = ""
-                            if "overview" in media.keys():
-                                overview = media["overview"]
-                            else:
-                                overview = ""
+                    if len(cat["children"]) == 0:
+                        continue
+                    for media in cat["children"]:
+                        num_of_results += 1
+                        title = media["title"]
+                        type_ = cat["categoryInfo"]["type"]
+                        releaseDate = media["releaseDate"] if "releaseDate" in media.keys() else ""
+                        backdrop = media["backdropPath"] if "backdropPath" in media.keys() else ""
+                        overview = media["overview"] if "overview" in media.keys() else ""
+                        if str(type_) == "TV Shows":
+                            url_show = "https://{}/view/{}".format(LDX_DOMAIN, media["id"])
+                            f_html = "<b> - View Link : </b> <a href='{}'>Click Here To Watch !</a> <br>".format(url_show)
 
-                            if str(type_) == "TV Shows":
-                                url_show = "https://{}/view/{}".format(LDX_DOMAIN, media["id"])
-                                f_html = "<b> - View Link : </b> <a href='{}'>Click Here To Watch !</a> <br>".format(url_show)
+                        else:
+                            url_mov = "https://{}/view/{}".format(LDX_DOMAIN, media["id"])
+                            f_html = "<b> - View Link : </b><a href={}>Click Here To Watch !</a> !!<br>".format(url_mov)
 
-                            else:
-                                url_mov = "https://{}/view/{}".format(LDX_DOMAIN, media["id"])
-                                f_html = "<b> - View Link : </b><a href={}>Click Here To Watch !</a> !!<br>".format(url_mov)
-
-                            TG_html = '''<p>
+                        TG_html = '''<p>
                                             <img src=''' + str(backdrop) + '''>
                                             <b>Name : </b><code>''' + str(title) + '''</code><br>
                                             <b> - Overview : </b><code>''' + str(overview) + '''</code><br>
@@ -100,12 +91,7 @@ def findmes(m):
                                             {}<br>➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖<br>
                                         </p>'''.format(f_html)
 
-                            html_string = html_string + TG_html
-                    else:
-                        continue
-            else:
-                pass
-
+                        html_string += TG_html
             if num_of_results != 0:
                 telegraph_res = telegraph.create_page(
                     title="WeebFlix Search Results",

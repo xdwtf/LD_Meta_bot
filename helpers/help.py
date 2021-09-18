@@ -33,9 +33,8 @@ logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
 def grphelp(m):
-    ghelpstr = f"""*Available Commands in Group :*
-        \n/find - *To Search and Get View Online Links.*
-        """
+    ghelpstr = '*Available Commands in Group :*\x1f        \n/find - *To Search and Get View Online Links.*\x1f        '
+
     bot.send_message(m.chat.id, ghelpstr, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 def helpmes(m):
@@ -97,22 +96,15 @@ def get_callback(query):
     help_update_message(query.message)
 
 def help_update_message(m, data):
-    if data == 'instructions' or data == 'help' or data == 'closehelp':
-        if data == 'instructions' or data == 'help':
-            if data == 'instructions':
-                pg = Inststring
-            if data == 'help':
-                pg = Helpstring
+    if data in ['instructions', 'help', 'closehelp']:
+        if data in ['instructions', 'help']:
+            pg = Helpstring if data == 'help' else Inststring
             bot.edit_message_text(pg,
                 m.chat.id, message_id=HelpMessage.message_id,
                 reply_markup=help_update_keyboard(pg, data),
                 parse_mode=telegram.ParseMode.MARKDOWN)
-        elif data == 'closehelp':
-            bot.delete_message(m.chat.id, message_id=HelpMessage.message_id)
         else:
-            pass 
-    else:
-        pass
+            bot.delete_message(m.chat.id, message_id=HelpMessage.message_id)
 
 def help_update_keyboard(pg, data):
     if data == 'instructions':
@@ -129,8 +121,6 @@ def help_update_keyboard(pg, data):
             telebot.types.InlineKeyboardButton('Instructions', callback_data='instructions')
         )
         return keyboard
-    else:
-        pass
 
 @bot.callback_query_handler(func=lambda call: True)
 def iq_callback(query):
