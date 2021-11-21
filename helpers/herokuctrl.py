@@ -60,7 +60,7 @@ def hrestart_mod(m):
         bot.edit_message_text("`Heroku Not Accessible !!`", m.chat.id, message_id=resmes.message_id, parse_mode=telegram.ParseMode.MARKDOWN)
 
 def hrestartx_mod(m):
-    resmes = bot.send_message(m.chat.id, text="Restarting Dynos For X`", parse_mode=telegram.ParseMode.MARKDOWN)
+    resmes = bot.send_message(m.chat.id, text="Restarting Dynos For X", parse_mode=telegram.ParseMode.MARKDOWN)
     try:
         # Requests
         url = f"https://api.heroku.com/apps/{HEROKU_APP_NAMEX}/dynos"
