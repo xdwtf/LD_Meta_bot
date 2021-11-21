@@ -17,19 +17,7 @@ from random import *
 # HELPERS / MODULES ==> Didn't Change the folder to modules cause Deploys will be bricked..
 
 from helpers.start import startmessage
-from helpers.speedtest import speedtestmes
-from helpers.rebuild import rebuildmes
-from helpers.restart import restartmes
-from helpers.search import searchmes
-from helpers.find import findmes
 from helpers.herokuctrl import hdyno_mod, hrestart_mod
-from helpers.m3u8 import getm3u8
-from helpers.help import helpmes, help_update_message, grphelp, help_update_keyboard
-from helpers.config import configmes, config_update_message, config_update_keyboard
-from helpers.categories import  catsetup, cat_update_message, cat_update_keyboard, action_category, action_keyboard, action_listcategory, action_addcategory
-from helpers.bot_id import configsetups
-from helpers.accounts import accountsetup
-from helpers.settings import settingsedit
 from helpers.signal import SIG
 
 # UPTIME
