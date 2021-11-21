@@ -34,6 +34,11 @@ if len(HEROKU_APP_NAME) != 0 and len(HEROKU_API_KEY) != 0:
     Heroku = heroku3.from_key(HEROKU_API_KEY)
     app = Heroku.app(HEROKU_APP_NAME)
 
+# HEROKU 
+if len(HEROKU_APP_NAMEX) != 0 and len(HEROKU_API_KEYX) != 0:
+    Herokux = heroku3.from_key(HEROKU_API_KEYX)
+    appx = Herokux.appx(HEROKU_APP_NAMEX)
+
 # Request Headers
 headers = {
     "accept": "application/vnd.heroku+json; version=3.account-quotas",
@@ -110,7 +115,7 @@ def hdynox_mod(m):
     try:
         dyno = bot.send_message(m.chat.id, text="`Getting Dyno Stats ...`", parse_mode=telegram.ParseMode.MARKDOWN)
         # Requests
-        acc_id = Heroku.account().id
+        acc_id = Herokux.account().id
 
         url2 = "https://api.heroku.com/accounts/{}/actions/get-quota".format(acc_id)
         r2 = requests.get(url2, headers=headersx)
@@ -129,7 +134,7 @@ def hdynox_mod(m):
         # App Quota
         Apps = res2["apps"]
         for apps in Apps:
-            if apps.get("app_uuid") == app.id:
+            if apps.get("app_uuid") == appx.id:
                 AppQuotaUsed = apps.get("quota_used") / 60
                 AppPercent = math.floor(apps.get("quota_used") * 100 / quota)
                 break
@@ -140,7 +145,7 @@ def hdynox_mod(m):
         AppHours = math.floor(AppQuotaUsed / 60)
         AppMinutes = math.floor(AppQuotaUsed % 60)
 
-        res_string = f"*Dyno Usage for* `{app.name}`:\n" + f"• `{AppHours}` *Hours and* `{AppMinutes}` *Minutes - {AppPercent}%*\n\n" + "*Dyno Remaining this month:*\n" + f"• `{hours}` *Hours and* `{minutes}` *Minutes - {quota_percent}%*\n\n" + "*Estimated Dyno Expired:*\n" + f"• `{day}` *Days*"
+        res_string = f"*Dyno Usage for* `{appx.name}`:\n" + f"• `{AppHours}` *Hours and* `{AppMinutes}` *Minutes - {AppPercent}%*\n\n" + "*Dyno Remaining this month:*\n" + f"• `{hours}` *Hours and* `{minutes}` *Minutes - {quota_percent}%*\n\n" + "*Estimated Dyno Expired:*\n" + f"• `{day}` *Days*"
 
         bot.edit_message_text(res_string, m.chat.id, message_id=dyno.message_id, parse_mode=telegram.ParseMode.MARKDOWN)
     except:
