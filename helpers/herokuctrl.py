@@ -105,3 +105,43 @@ def hdyno_mod(m):
         bot.edit_message_text(res_string, m.chat.id, message_id=dyno.message_id, parse_mode=telegram.ParseMode.MARKDOWN)
     except:
         bot.edit_message_text("`Heroku Not Accessible !!`", m.chat.id, message_id=dyno.message_id, parse_mode=telegram.ParseMode.MARKDOWN)
+
+def hdynox_mod(m):
+    try:
+        dyno = bot.send_message(m.chat.id, text="`Getting Dyno Stats ...`", parse_mode=telegram.ParseMode.MARKDOWN)
+        # Requests
+        acc_id = Heroku.account().id
+
+        url2 = "https://api.heroku.com/accounts/{}/actions/get-quota".format(acc_id)
+        r2 = requests.get(url2, headers=headersx)
+        res2 = r2.json()
+
+        # Account Quota
+        quota = res2["account_quota"]
+        quota_used = res2["quota_used"]
+        quota_remain = quota - quota_used
+        quota_percent = math.floor(quota_remain / quota * 100)
+        minutes_remain = quota_remain / 60
+        hours = math.floor(minutes_remain / 60)
+        minutes = math.floor(minutes_remain % 60)
+        day = math.floor(hours / 24)
+
+        # App Quota
+        Apps = res2["apps"]
+        for apps in Apps:
+            if apps.get("app_uuid") == app.id:
+                AppQuotaUsed = apps.get("quota_used") / 60
+                AppPercent = math.floor(apps.get("quota_used") * 100 / quota)
+                break
+        else:
+            AppQuotaUsed = 0
+            AppPercent = 0
+
+        AppHours = math.floor(AppQuotaUsed / 60)
+        AppMinutes = math.floor(AppQuotaUsed % 60)
+
+        res_string = f"*Dyno Usage for* `{app.name}`:\n" + f"• `{AppHours}` *Hours and* `{AppMinutes}` *Minutes - {AppPercent}%*\n\n" + "*Dyno Remaining this month:*\n" + f"• `{hours}` *Hours and* `{minutes}` *Minutes - {quota_percent}%*\n\n" + "*Estimated Dyno Expired:*\n" + f"• `{day}` *Days*"
+
+        bot.edit_message_text(res_string, m.chat.id, message_id=dyno.message_id, parse_mode=telegram.ParseMode.MARKDOWN)
+    except:
+        bot.edit_message_text("`Heroku Not Accessible !!`", m.chat.id, message_id=dyno.message_id, parse_mode=telegram.ParseMode.MARKDOWN)        
