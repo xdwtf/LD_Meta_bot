@@ -5,6 +5,10 @@
 			"description": "The telegram bot token that you get from @BotFather.",
 			"required": true
 		},
+		"ADMIN_IDS": {
+			"description": "The Telegram User ID of the Owner of the Bot. Get it by using /info in @MissRose_bot.",
+			"required": true
+		},
 		"BOT_USERNAME": {
 			"description": "The Username of Bot without '@'.",
 			"required": true
