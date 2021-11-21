@@ -41,12 +41,28 @@ headers = {
     "content-type": "application/json"
 }
 
+# Request Headers
+headersx = {
+    "accept": "application/vnd.heroku+json; version=3.account-quotas",
+    "authorization": "Bearer {}".format(HEROKU_API_KEYX),
+    "content-type": "application/json"
+}
+
 def hrestart_mod(m):
-    resmes = bot.send_message(m.chat.id, text="`Restarting Dynos ...\n\nPls Wait for 2-3 minutes for LibDrive to be Back...`", parse_mode=telegram.ParseMode.MARKDOWN)
+    resmes = bot.send_message(m.chat.id, text="Restarting Dynos For XD", parse_mode=telegram.ParseMode.MARKDOWN)
     try:
         # Requests
         url = f"https://api.heroku.com/apps/{HEROKU_APP_NAME}/dynos"
         r = requests.delete(url, headers=headers)
+    except:
+        bot.edit_message_text("`Heroku Not Accessible !!`", m.chat.id, message_id=resmes.message_id, parse_mode=telegram.ParseMode.MARKDOWN)
+
+def hrestartx_mod(m):
+    resmes = bot.send_message(m.chat.id, text="Restarting Dynos For X`", parse_mode=telegram.ParseMode.MARKDOWN)
+    try:
+        # Requests
+        url = f"https://api.heroku.com/apps/{HEROKU_APP_NAMEX}/dynos"
+        r = requests.delete(url, headers=headersx)
     except:
         bot.edit_message_text("`Heroku Not Accessible !!`", m.chat.id, message_id=resmes.message_id, parse_mode=telegram.ParseMode.MARKDOWN)
 
