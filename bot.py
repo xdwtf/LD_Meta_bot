@@ -17,7 +17,7 @@ from random import *
 # HELPERS / MODULES ==> Didn't Change the folder to modules cause Deploys will be bricked..
 
 from helpers.start import startmessage
-from helpers.herokuctrl import hdyno_mod, hrestart_mod
+from helpers.herokuctrl import hdyno_mod, hrestart_mod, hdynox_mod, hrestartx_mod
 from helpers.signal import SIG
 
 # UPTIME
@@ -29,15 +29,12 @@ botStartTime = time.time()
 from config import Config
 
 BOT_TOKEN = Config.BOT_TOKEN
-LD_DOMAIN = Config.LD_DOMAIN
-SECRET = Config.SECRET
 ADMIN_IDS = Config.ADMIN_IDS
-GROUP_IDS = Config.GROUP_IDS
-PIC = Config.PIC
 HEROKU_API_KEY = Config.HEROKU_API_KEY
 HEROKU_APP_NAME = Config.HEROKU_APP_NAME
+HEROKU_API_KEYX = Config.HEROKU_API_KEYX
+HEROKU_APP_NAMEX = Config.HEROKU_APP_NAMEX
 BOT_USERNAME = Config.BOT_USERNAME
-GROUP_CMDS = Config.GROUP_CMDS
 
 # ADMIN / OWNER
 
@@ -50,21 +47,6 @@ try:
 except:
     ADMIN_LIST = []  # ==> Do Not Touch This !!
     restricted_mode = False
-
-# GROUPS
-
-try:
-    GRP_LIST = GROUP_IDS
-    grprestricted_mode = True
-except:
-    GRP_LIST = []  # ==> Do Not Touch This !!
-    grprestricted_mode = True
-
-try:
-    GROUP_COMMANDS = GROUP_CMDS.split()
-    GROUP_COMMANDS.extend(['help'])
-except:
-    GROUP_COMMANDS = []
 
 # BOT CODE
 
@@ -111,115 +93,6 @@ def restricted(func):
 def start(m):
     startmessage(m, botStartTime)
 
-@bot.message_handler(commands=['help'])
-@restricted
-def help(m):
-    helpmes(m)
-
-@bot.message_handler(commands=['grouphelp'])
-@restricted
-def grouphelp(m):
-    grphelp(m)
-
-@bot.message_handler(commands=['speedtest'])
-@restricted
-def speedtest(m):
-    speedtestmes(m)    
-
-@bot.message_handler(commands=['rebuild'])
-@restricted
-def rebuild(m):
-    rebuildmes(m)
-
-@bot.message_handler(commands=['restart'])
-@restricted
-def restart(m):
-    restartmes(m)
-
-@bot.message_handler(commands=['fixconfig'])
-@restricted
-def fixconfig(m):
-    configsetups.fixconfigmes(m)
-
-@bot.message_handler(commands=['assignid'])
-@restricted
-def assignid(m):
-    configsetups.assignidmes(m)
-
-@bot.message_handler(commands=['unassignid'])
-@restricted
-def unassignid(m):
-    configsetups.unassignidmes(m)
-
-@bot.message_handler(commands=['accounts'])
-@restricted
-def accounts(m):
-    accountsetup.accountsmes(m)
-
-@bot.message_handler(commands=['accountsclip'])
-def accountsclip(m):
-    accountsetup.accountsclipmes(m)
-
-@bot.message_handler(commands=['addaccount'])
-@restricted
-def addaccount(m):
-    accountsetup.addaccountmes(m)
-
-@bot.message_handler(commands=['rmaccount'])
-@restricted
-def rmaccount(m):
-    accountsetup.rmaccountmes(m)
-
-@bot.message_handler(commands=['rmaccid'])
-@restricted
-def rmaccid(m):
-    accountsetup.rmaccidmes(m)
-
-@bot.message_handler(commands=['categories'])
-@restricted
-def categories(m):
-    catsetup.categories_mod(m)
-
-@bot.message_handler(commands=['setanilist'])
-@restricted
-def setanilist(m):
-    catsetup.setanilist_mod(m)
-
-@bot.message_handler(commands=['addcategory'])
-@restricted
-def addcategory(m):
-    catsetup.addcategory_mod(m)
-
-@bot.message_handler(commands=['rmcategory'])
-@restricted
-def rmcategory(m):
-    catsetup.rmcategory_mod(m)
-
-@bot.message_handler(commands=['config'])
-@restricted
-def config(m):
-    configmes(m)
-
-@bot.message_handler(commands=['settings'])
-@restricted
-def settings(m):
-    settingsedit.settings_mod(m)
-
-@bot.message_handler(commands=['set'])
-@restricted
-def set(m):
-    settingsedit.set_mod(m)
-
-@bot.message_handler(commands=['ui'])
-@restricted
-def ui(m):
-    settingsedit.ui_mod(m)
-
-@bot.message_handler(commands=['setui'])
-@restricted
-def setui(m):
-    settingsedit.setui_mod(m)
-
 @bot.message_handler(commands=['hrestart'])
 def hrestart(m):
     hrestart_mod(m)
@@ -228,45 +101,13 @@ def hrestart(m):
 def hdyno(m):
     hdyno_mod(m)
 
-@bot.message_handler(commands=['search'])
-@restricted
-def search(m):
-    searchmes(m)
+@bot.message_handler(commands=['hrestartx'])
+def hrestartx(m):
+    hrestartx_mod(m)
 
-@bot.message_handler(commands=['find'])
-@restricted
-def find(m):
-    findmes(m)
-
-@bot.message_handler(commands=['m3u8'])
-@restricted
-def m3u8(m):
-    getm3u8(m)
-
-@bot.callback_query_handler(func=lambda call: True)
-def iq_callback(query):
-    global data
-    data = query.data
-    get_callback(query)
-
-def get_callback(query):
-    bot.answer_callback_query(query.id)
-    if data == 'instructions' or data == 'help' or data == 'closehelp':
-        help_update_message(query.message, data)
-    elif data == '1' or data == '2' or data == '3' or data == 'close':
-        config_update_message(query.message, data)
-    elif data == 'movies' or data == 'tv_shows' or data == 'amovies' or data == 'atv_shows':
-        cat_update_message(query.message, data)
-        action_addcategory(query.message, data)
-    else:
-        cat_update_message(query.message, data)
-        action_keyboard(query.message, data)
-            
-@bot.callback_query_handler(func=lambda call: True)
-def iq_callback(query):
-    global data
-    data = query.data
-    get_callback(query)
+@bot.message_handler(commands=['hdynox'])
+def hdynox(m):
+    hdynox_mod(m)
 
 signal.signal(signal.SIGINT, SIG.sigint_handler)
 signal.signal(signal.SIGTERM, SIG.sigterm_handler)
