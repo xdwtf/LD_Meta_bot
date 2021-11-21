@@ -34,7 +34,7 @@ if len(HEROKU_APP_NAME) != 0 and len(HEROKU_API_KEY) != 0:
 # HEROKU 
 if len(HEROKU_APP_NAMEX) != 0 and len(HEROKU_API_KEYX) != 0:
     Herokux = heroku3.from_key(HEROKU_API_KEYX)
-    appx = Herokux.appx(HEROKU_APP_NAMEX)
+    appx = Herokux.app(HEROKU_APP_NAMEX)
 
 # Request Headers
 headers = {
