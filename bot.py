@@ -55,7 +55,10 @@ GROUP_CMDS = Config.GROUP_CMDS
 
 try:
     ADMIN_LIST = ADMIN_IDS
-    restricted_mode = len(ADMIN_LIST) != 0
+    if len(ADMIN_LIST) != 0:
+        restricted_mode = True
+    else:
+        restricted_mode = False
 except:
     ADMIN_LIST = []  # ==> Do Not Touch This !!
     restricted_mode = False
@@ -86,6 +89,9 @@ CHAT_IDS = ADMIN_IDS.split()
 for i in CHAT_IDS:
     if len(i) != 0 and i.isnumeric() == True:
         bot.send_message(int(i), "`Hey ! The Bot Is Up and Running !`", parse_mode=telegram.ParseMode.MARKDOWN)
+    else:
+        pass
+
 allchar = "abcdefghijklmnopqrstuvwxyz0123456789"
 
 def restricted(func):
@@ -96,25 +102,57 @@ def restricted(func):
         if str(chat_id).startswith("-100"):
             if (grprestricted_mode) and (str(chat_id) not in GRP_LIST):
                 print("Unauthorized access denied for {}.".format(chat_id))
-                bot.send_message(update.chat.id, "*Oops!!! Un-Authorized Chat*", parse_mode='Markdown', disable_web_page_preview=True)
+                bot.send_message(update.chat.id, "**Oops!!! Un-Authorized Chat**", parse_mode='Markdown', disable_web_page_preview=True)
                 return
             elif update.text.split("@"+BOT_USERNAME)[0][1:] not in GROUP_COMMANDS:
-                bot.send_message(update.chat.id, "*Oops!!! Un-Authorized User*", parse_mode='Markdown', disable_web_page_preview=True)
+                bot.send_message(update.chat.id, "**Oops!!! Un-Authorized User**", parse_mode='Markdown', disable_web_page_preview=True)
                 return
             elif "help" in update.text:
                 grphelp(m=update)
                 return
-        elif (restricted_mode) and (str(chat_id) not in ADMIN_LIST):
-            print("Unauthorized access denied for {} - {}.".format(user_id, update.from_user.username))
-            bot.send_message(update.chat.id, "*Oops!!! Un-Authorized User*", parse_mode='Markdown', disable_web_page_preview=True)
-            return
+        else:
+            if (restricted_mode) and (str(chat_id) not in ADMIN_LIST):
+                print("Unauthorized access denied for {} - {}.".format(user_id, update.from_user.username))
+                bot.send_message(update.chat.id, "*Oops!!! Un-Authorized User*", parse_mode='Markdown', disable_web_page_preview=True)
+                return
         return func(update, *args, **kwargs)
     return wrapped
+
+def extract_url_parameter(text):
+    if len(text.split()) > 1:
+        parameter = (text.split()[1]).split("_")[0]
+        value = " ".join((text.split()[1]).split("_")[1:])
+        return {'parameter': parameter, 'value': value}
+    else:
+        return None
 
 @bot.message_handler(commands=['start','hi'])
 @restricted
 def start(m):
-    startmessage(m, botStartTime)
+    param = extract_url_parameter(m.text)
+    if param:
+        m.text = f"/{param['parameter']} {param['value']}"
+        if param['parameter'] == 'search':
+            searchmes(m)
+        elif param['parameter'] == 'm3u8':
+            getm3u8(m)
+        elif param['parameter'] == 'find':
+            findmes(m)
+        else:
+            bot.send_message(m.chat.id, "*Error :\t\t*Invalid Parameter.", parse_mode='Markdown', disable_web_page_preview=True)
+    else:
+        startmessage(m, botStartTime)
+
+@bot.message_handler(commands=['webhooks'])
+@restricted
+def webhooks(m):
+    webhook_str = f"""*This Bot is Capable of Searching using URLs that redirect to telegram and Start searching with a click.*
+    \nFollowing are the supported parameters and usage examples :
+    \n 1. *Search* : `https://telegram.me/{BOT_USERNAME}?start=search_<query>`
+    \n 2. *M3U8* : `https://telegram.me/{BOT_USERNAME}?start=m3u8_<query>`
+    \n 3. *Find* : `https://telegram.me/{BOT_USERNAME}?start=find_<query>`
+    \n\t\t Use only *_* to separate the words in <query>. """
+    bot.send_message(m.chat.id, webhook_str, parse_mode='Markdown', disable_web_page_preview=True)
 
 @bot.message_handler(commands=['help'])
 @restricted
@@ -255,12 +293,11 @@ def iq_callback(query):
     get_callback(query)
 
 def get_callback(query):
-    bot.answer_callback_query(query.id)
-    if data in ['instructions', 'help', 'closehelp']:
+    if data == 'instructions' or data == 'help' or data == 'closehelp':
         help_update_message(query.message, data)
-    elif data in ['1', '2', '3', 'close']:
+    elif data == '1' or data == '2' or data == '3' or data == 'close':
         config_update_message(query.message, data)
-    elif data in ['movies', 'tv_shows', 'amovies', 'atv_shows']:
+    elif data == 'movies' or data == 'tv_shows' or data == 'amovies' or data == 'atv_shows':
         cat_update_message(query.message, data)
         action_addcategory(query.message, data)
     else:
